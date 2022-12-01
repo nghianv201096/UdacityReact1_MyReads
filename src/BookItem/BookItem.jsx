@@ -6,13 +6,27 @@ class BookItem extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      hasError: false,
-    };
+    this.state = { };
   }
 
   render () {
-    const bookUrl = `url("${this.props.bookUrl}")`;
+    // Image url.
+    const thumbnail = this.props.bookObject && this.props.bookObject.imageLinks
+      ? this.props.bookObject.imageLinks.thumbnail
+      : '';
+    const bookUrl = `url("${thumbnail}")`;
+
+    // Authors.
+    const bookAuthors = this.props.bookObject.authors
+      ? this.props.bookObject.authors.join(',')
+      : '';
+
+    // Title.
+    const bookTitle = this.props.bookObject.title;
+
+    // Shelf.
+    const shelf = this.props.bookObject.shelf;
+
     return (
       <li>
         <div className="book">
@@ -28,8 +42,8 @@ class BookItem extends React.Component {
               </select>
             </div>
           </div>
-          <div className="book-title">{this.props.bookTitle}</div>
-          <div className="book-authors">{this.props.bookAuthors}</div>
+          <div className="book-title">{bookTitle}</div>
+          <div className="book-authors">{bookAuthors}</div>
         </div>
       </li>
     );
@@ -37,15 +51,7 @@ class BookItem extends React.Component {
 }
 
 BookItem.propTypes = {
-  bookUrl: PropTypes.string,
-  bookTitle: PropTypes.string,
-  bookAuthors: PropTypes.string
-};
-
-BookItem.defaultProps = {
-  bookUrl: 'http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api',
-  bookTitle: 'no title',
-  bookAuthors: 'no authors'
+  bookObject: PropTypes.object
 };
 
 export default BookItem;

@@ -1,53 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Route } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import BookItem from '../BookItem/BookItem';
+import * as BooksAPI from '../BooksAPI'
+
 class BookList extends React.Component { 
   constructor(props) {
     super(props);
 
     this.state = {
-      books: [
-        {
-          bookUrl: "http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "wantToRead"
-        },
-        {
-          bookUrl: "http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "wantToRead"
-        },
-        {
-          bookUrl: "http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "currentlyReading"
-        },
-        {
-          bookUrl: "http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "currentlyReading"
-        },
-        {
-          bookUrl: "http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "read"
-        },
-        {
-          bookUrl: "http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api",
-          bookTitle: "To Kill a Mockingbird",
-          bookAuthors: "Harper Lee",
-          bookStatus: "read"
-        }
-      ]
+      books: []
     };
   }
+
+  componentDidMount = () => {
+    this.getData();
+  }
+
+  getData = () => {
+    BooksAPI.getAll()
+      .then((books) => {
+        console.log(books);
+        this.setState(() => ({
+          books
+        }));
+      });
+  }
+
   render () {
     const bookStatuses = [
       {
@@ -78,12 +57,9 @@ class BookList extends React.Component {
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                       {
-                        this.state.books.filter((bookItem) => bookItem.bookStatus === bookStatus.code)
+                        this.state.books.filter((bookItem) => bookItem.shelf === bookStatus.code)
                           .map((bookItem) => 
-                            <BookItem 
-                              bookUrl={bookItem.bookUrl} 
-                              bookTitle={bookItem.bookTitle} 
-                              bookAuthors={bookItem.bookAuthors}>
+                            <BookItem bookObject={bookItem}>
                             </BookItem>
                           )
                       }
