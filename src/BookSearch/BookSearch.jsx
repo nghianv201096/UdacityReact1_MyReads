@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import BookItem from '../BookItem/BookItem';
-//import { Test } from './BookSearch.styles';
+import * as BooksAPI from '../BooksAPI'
 
 class BookSearch extends PureComponent { 
   constructor(props) {
@@ -13,28 +12,35 @@ class BookSearch extends PureComponent {
     };
   }
 
-  componentWillMount = () => {
-    console.log('BookSearch will mount');
+  searchTimeout = 0;
+
+  getData = (key) => {
+    if(!key) {
+      this.setState(() => ({
+        books: []
+      }));
+    } else {
+      BooksAPI.search(key)
+        .then((rs) => {
+          console.log(rs);
+          const books = Array.isArray(rs) ? rs : [];
+          console.log(`done search ${books.length} books`);
+          this.setState(() => ({
+            books
+          }));
+        });
+    }
   }
 
-  componentDidMount = () => {
-    console.log('BookSearch mounted');
-  }
-
-  componentWillReceiveProps = (nextProps) => {
-    console.log('BookSearch will receive props', nextProps);
-  }
-
-  componentWillUpdate = (nextProps, nextState) => {
-    console.log('BookSearch will update', nextProps, nextState);
-  }
-
-  componentDidUpdate = () => {
-    console.log('BookSearch did update');
-  }
-
-  componentWillUnmount = () => {
-    console.log('BookSearch will unmount');
+  searchBooks(key) {    
+    console.log(`...pending search for ${key}`);
+    if(this.searchTimeout) {
+      window.clearTimeout(this.searchTimeout);
+    }
+    
+    this.searchTimeout = window.setTimeout(() => {
+      this.getData(key);
+    }, 200);
   }
 
   render () {
@@ -46,16 +52,14 @@ class BookSearch extends PureComponent {
             className='close-search'
           >Close</Link>
           <div className="search-books-input-wrapper">
-            <input type="text" placeholder="Search by title or author"/>
+            <input onChange={e => this.searchBooks(e.target.value)} type="text" placeholder="Search by title or author"/>
           </div>
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
             {
               this.state.books.map((bookItem) => 
-                <BookItem 
-                  bookObject={bookItem}>
-                </BookItem>
+                <BookItem bookObject={bookItem}></BookItem>
               )
             }
           </ol>
@@ -64,13 +68,5 @@ class BookSearch extends PureComponent {
     );
   }
 }
-
-BookSearch.propTypes = {
-  // bla: PropTypes.string,
-};
-
-BookSearch.defaultProps = {
-  // bla: 'test',
-};
 
 export default BookSearch;

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import BookItem from '../BookItem/BookItem';
 import * as BooksAPI from '../BooksAPI'
@@ -20,7 +19,7 @@ class BookList extends React.Component {
   getData = () => {
     BooksAPI.getAll()
       .then((books) => {
-        console.log(books);
+        console.log(`getting ${books.length} books`);
         this.setState(() => ({
           books
         }));
@@ -28,7 +27,7 @@ class BookList extends React.Component {
   }
 
   render () {
-    const bookStatuses = [
+    const shelves = [
       {
         code: "wantToRead",
         name: "Want to Read"
@@ -51,17 +50,14 @@ class BookList extends React.Component {
         <div className="list-books-content">
           <div>
             {
-              bookStatuses.map((bookStatus) =>
+              shelves.map((shelf) =>
                 <div className="bookshelf">
-                  <h2 className="bookshelf-title">{bookStatus.name}</h2>
+                  <h2 className="bookshelf-title">{shelf.name}</h2>
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                       {
-                        this.state.books.filter((bookItem) => bookItem.shelf === bookStatus.code)
-                          .map((bookItem) => 
-                            <BookItem bookObject={bookItem}>
-                            </BookItem>
-                          )
+                        this.state.books.filter((bookItem) => bookItem.shelf === shelf.code)
+                          .map((bookItem) => <BookItem handleUpdate={this.getData} bookObject={bookItem}></BookItem>)
                       }
                     </ol>
                   </div>
@@ -79,13 +75,5 @@ class BookList extends React.Component {
     );
   }
 }
-
-BookList.propTypes = {
-  // bla: PropTypes.string,
-};
-
-BookList.defaultProps = {
-  // bla: 'test',
-};
 
 export default BookList;

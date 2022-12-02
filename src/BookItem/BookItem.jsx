@@ -1,39 +1,74 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-//import { Test } from './BookItem.styles';
+import * as BookAPI from '../BooksAPI'
 
 class BookItem extends React.Component { 
   constructor(props) {
     super(props);
 
-    this.state = { };
-  }
-
-  render () {
+    var bookObject = this.props.bookObject;
     // Image url.
-    const thumbnail = this.props.bookObject && this.props.bookObject.imageLinks
-      ? this.props.bookObject.imageLinks.thumbnail
+    const thumbnail = this.props.bookObject && bookObject.imageLinks
+      ? bookObject.imageLinks.thumbnail
       : '';
     const bookUrl = `url("${thumbnail}")`;
 
     // Authors.
-    const bookAuthors = this.props.bookObject.authors
-      ? this.props.bookObject.authors.join(',')
+    const bookAuthors = bookObject.authors
+      ? bookObject.authors.join(',')
       : '';
 
-    // Title.
-    const bookTitle = this.props.bookObject.title;
+    // Set state.
+    this.state = { 
+      bookObject: {
+        id: bookObject.id,
+        bookUrl: bookUrl,
+        bookAuthors: bookAuthors,
+        bookTitle: bookObject.bookTitle,
+        shelf: bookObject.shelf || 'none'
+      }
+    };
+  }
 
-    // Shelf.
-    const shelf = this.props.bookObject.shelf;
+  handleChange(value) {
+    if(value !== this.state.bookObject.shelf) {
+      // Update data in backend.
+      BookAPI.update(this.state.bookObject, value)
+        .then(rs => {
+          // Update the state.
+          console.log('updating the state');
+          const bookObject = this.state.bookObject;
+          this.setState({
+            bookObject: {
+              id: bookObject.id,
+              bookUrl: bookObject.bookUrl,
+              bookAuthors: bookObject.bookAuthors,
+              bookTitle: bookObject.title,
+              shelf: value
+            }
+          });
+          console.log('updated the state');
+
+          // Emit event.
+          if(this.props.handleUpdate) {
+            console.log("emitting the update event");
+            this.props.handleUpdate();
+            console.log("emitted the update event")
+          } 
+        });
+    }
+  }
+
+  render () {
+    const bookObject = this.state.bookObject;
 
     return (
       <li>
         <div className="book">
           <div className="book-top">
-            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: bookUrl }}></div>
+            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: bookObject.bookUrl }}></div>
             <div className="book-shelf-changer">
-              <select>
+              <select value={bookObject.shelf} onChange={e => this.handleChange(e.target.value)}>
                 <option value="move" disabled>Move to...</option>
                 <option value="currentlyReading">Currently Reading</option>
                 <option value="wantToRead">Want to Read</option>
@@ -42,8 +77,8 @@ class BookItem extends React.Component {
               </select>
             </div>
           </div>
-          <div className="book-title">{bookTitle}</div>
-          <div className="book-authors">{bookAuthors}</div>
+          <div className="book-title">{bookObject.bookTitle}</div>
+          <div className="book-authors">{bookObject.bookAuthors}</div>
         </div>
       </li>
     );
