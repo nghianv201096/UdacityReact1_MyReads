@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as BookAPI from '../BooksAPI'
+import * as Common from '../Common'
 
 class BookItem extends React.Component { 
   constructor(props) {
     super(props);
 
-    var bookObject = this.props.bookObject;
     // Image url.
-    const thumbnail = this.props.bookObject && bookObject.imageLinks
+    var bookObject = this.props.bookObject;
+    const thumbnail = bookObject && bookObject.imageLinks
       ? bookObject.imageLinks.thumbnail
       : '';
     const bookUrl = `url("${thumbnail}")`;
@@ -36,7 +37,7 @@ class BookItem extends React.Component {
       BookAPI.update(this.state.bookObject, value)
         .then(rs => {
           // Update the state.
-          console.log('updating the state');
+          console.log('...updating the state');
           const bookObject = this.state.bookObject;
           this.setState({
             bookObject: {
@@ -51,7 +52,7 @@ class BookItem extends React.Component {
 
           // Emit event.
           if(this.props.handleUpdate) {
-            console.log("emitting the update event");
+            console.log("...emitting the update event");
             this.props.handleUpdate();
             console.log("emitted the update event")
           } 
@@ -70,9 +71,9 @@ class BookItem extends React.Component {
             <div className="book-shelf-changer">
               <select value={bookObject.shelf} onChange={e => this.handleChange(e.target.value)}>
                 <option value="move" disabled>Move to...</option>
-                <option value="currentlyReading">Currently Reading</option>
-                <option value="wantToRead">Want to Read</option>
-                <option value="read">Read</option>
+                {
+                  Common.shelves.map(shelf => <option key={shelf.code} value={shelf.code}>{shelf.name}</option>)
+                }
                 <option value="none">None</option>
               </select>
             </div>

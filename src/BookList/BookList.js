@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'
 import BookItem from '../BookItem/BookItem';
 import * as BooksAPI from '../BooksAPI'
+import * as Common from '../Common'
 
 class BookList extends React.Component { 
   constructor(props) {
@@ -27,21 +28,6 @@ class BookList extends React.Component {
   }
 
   render () {
-    const shelves = [
-      {
-        code: "wantToRead",
-        name: "Want to Read"
-      },
-      {
-        code: "currentlyReading",
-        name: "Currently Reading"
-      },
-      {
-        code: "read",
-        name: "Read"
-      }
-    ];
-
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -50,14 +36,14 @@ class BookList extends React.Component {
         <div className="list-books-content">
           <div>
             {
-              shelves.map((shelf) =>
-                <div className="bookshelf">
+              Common.shelves.map((shelf) =>
+                <div key={shelf.code} className="bookshelf">
                   <h2 className="bookshelf-title">{shelf.name}</h2>
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                       {
                         this.state.books.filter((bookItem) => bookItem.shelf === shelf.code)
-                          .map((bookItem) => <BookItem handleUpdate={this.getData} bookObject={bookItem}></BookItem>)
+                          .map((bookItem) => <BookItem key={bookItem.id} handleUpdate={this.getData} bookObject={bookItem}></BookItem>)
                       }
                     </ol>
                   </div>
@@ -67,9 +53,7 @@ class BookList extends React.Component {
           </div>
         </div>
         <div className="open-search">
-          <Link
-            to='/search'
-          >Add a book</Link>
+          <Link to='/search' >Add a book</Link>
         </div>
       </div>
     );

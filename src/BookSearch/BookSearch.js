@@ -59,7 +59,7 @@ class BookSearch extends PureComponent {
           <ol className="books-grid">
             {
               this.state.books.map((bookItem) => 
-                <BookItem bookObject={bookItem}></BookItem>
+                <BookItem key={bookItem.id} bookObject={bookItem}></BookItem>
               )
             }
           </ol>
