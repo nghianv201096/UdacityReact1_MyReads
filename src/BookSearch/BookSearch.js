@@ -10,6 +10,14 @@ class BookSearch extends PureComponent {
     this.state = {
       books: []
     };
+
+    this.onUpdateBook = this.onUpdateBook.bind(this);
+  }
+
+  onUpdateBook() {
+    if(this.props.onUpdateBook) {
+      this.props.onUpdateBook();
+    }
   }
 
   searchTimeout = 0;
@@ -44,6 +52,19 @@ class BookSearch extends PureComponent {
   }
 
   render () {
+    console.log('...re-render the search page');
+
+    const onShelfBooks = this.props.books;
+    const books = this.state.books;
+
+    books.forEach(book => {
+      const onShelfBook = onShelfBooks.filter(b => b.id === book.id);
+      if(onShelfBook.length) {
+        console.log(`set status for book: ${book.title} to ${onShelfBook[0].shelf}`);
+        book.shelf = onShelfBook[0].shelf;
+      }
+    });
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -58,8 +79,8 @@ class BookSearch extends PureComponent {
         <div className="search-books-results">
           <ol className="books-grid">
             {
-              this.state.books.map((bookItem) => 
-                <BookItem key={bookItem.id} bookObject={bookItem}></BookItem>
+              books.map((book) => 
+                <BookItem key={book.id} handleUpdate={this.onUpdateBook} bookObject={book}></BookItem>
               )
             }
           </ol>

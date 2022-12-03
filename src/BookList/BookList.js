@@ -1,33 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
 import BookItem from '../BookItem/BookItem';
-import * as BooksAPI from '../BooksAPI'
 import * as Common from '../Common'
 
 class BookList extends React.Component { 
   constructor(props) {
     super(props);
 
-    this.state = {
-      books: []
-    };
+    this.onUpdateBook = this.onUpdateBook.bind(this);
   }
 
-  componentDidMount = () => {
-    this.getData();
-  }
-
-  getData = () => {
-    BooksAPI.getAll()
-      .then((books) => {
-        console.log(`getting ${books.length} books`);
-        this.setState(() => ({
-          books
-        }));
-      });
+  onUpdateBook() {
+    if(this.props.onUpdateBook) {
+      this.props.onUpdateBook();
+    }
   }
 
   render () {
+    const books = this.props.books;
+
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -42,8 +33,8 @@ class BookList extends React.Component {
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                       {
-                        this.state.books.filter((bookItem) => bookItem.shelf === shelf.code)
-                          .map((bookItem) => <BookItem key={bookItem.id} handleUpdate={this.getData} bookObject={bookItem}></BookItem>)
+                        books.filter((bookItem) => bookItem.shelf === shelf.code)
+                          .map((bookItem) => <BookItem key={bookItem.id} handleUpdate={this.onUpdateBook} bookObject={bookItem}></BookItem>)
                       }
                     </ol>
                   </div>
